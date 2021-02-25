@@ -71,12 +71,12 @@ export default {
       this.VK.Auth.login((response) => {
         if (response.status === 'connected') {
           this.vkId = response.session.user.id
-        }
-      })
 
-      this.VK.Api.call('groups.get', { v: '5.73' }, (r) => {
-        if (r.response) {
-          console.log('onAuthVKClick', r.response.items)
+          this.VK.Api.call('groups.get', { v: '5.73' }, (r) => {
+            if (r.response) {
+              this.redirectSuccess(r.response.items)
+            }
+          })
         }
       })
     },
@@ -84,7 +84,7 @@ export default {
     onGetGroupsByIdClick () {
       this.VK.Api.call('groups.get', { user_id: this.vkId, v: '5.73' }, (r) => {
         if (r.response) {
-          console.log('onGetGroupsByIdClick', r.response.items)
+          this.redirectSuccess(r.response.items)
         } else {
           this.groupsError = true
         }
@@ -94,6 +94,10 @@ export default {
     onOtherIdClick () {
       this.vkId = null
       this.groupsError = false
+    },
+
+    redirectSuccess (groups) {
+      this.$router.push(`/${this.vkId}?groups=${groups.join(',')}`)
     }
   }
 }
