@@ -1,0 +1,12 @@
+version: '3.5'
+services:
+  db:
+    image: postgres:13.2-alpine
+    environment:
+      - POSTGRES_USER=wizard_root
+      - POSTGRES_PASSWORD=x4S49gsyGnuRpBG
+      - POSTGRES_DB=wizard
+    ports:
+      - "5432:5432"
+    volumes:
+      - .docker/postgresql/data:/var/lib/postgresql/data
