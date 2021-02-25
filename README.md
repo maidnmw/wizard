@@ -15,7 +15,5 @@
 ## Frontend
 1. Установить необходимые зависимости npm i
 2. Запустить
-
-2.1. Сервер для разработки npm run dev
-
-2.2. Продакшн сервер npm run build -> npm run start
+- Сервер для разработки npm run dev
+- Продакшн сервер npm run build -> npm run start
