@@ -31,13 +31,32 @@ html {
   margin: 0;
 }
 
-.button--green {
+.button, .input {
   display: inline-block;
   border-radius: 4px;
-  border: 1px solid #3b8070;
-  color: #3b8070;
   text-decoration: none;
+  background-color: transparent;
+  font-size: 16px;
+  transition: all ease 400ms;
+  border: 1px solid;
+  outline: 0;
+}
+
+.button {
   padding: 10px 30px;
+}
+
+.input {
+  padding: 10px;
+}
+
+.button:hover {
+  cursor: pointer;
+}
+
+.button--green, .input--green {
+  border-color: #3b8070;
+  color: #3b8070;
 }
 
 .button--green:hover {
@@ -45,14 +64,9 @@ html {
   background-color: #3b8070;
 }
 
-.button--grey {
-  display: inline-block;
-  border-radius: 4px;
-  border: 1px solid #35495e;
+.button--grey, .input--grey {
+  border-color: #35495e;
   color: #35495e;
-  text-decoration: none;
-  padding: 10px 30px;
-  margin-left: 15px;
 }
 
 .button--grey:hover {
