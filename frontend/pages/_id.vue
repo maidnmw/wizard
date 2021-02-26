@@ -16,7 +16,7 @@
 export default {
   async asyncData ({ params, $axios, route }) {
     const { groups } = route.query
-    const direction = await $axios.$get(`http://127.0.0.1:8080/api/v1/direction?groups=${groups}`)
+    const direction = await $axios.$get(`http://127.0.0.1:3000/api/v1/direction?groups=${groups}`)
     return { direction }
   }
 }
@@ -29,6 +29,7 @@ export default {
   display: flex;
   justify-content: center;
   align-items: center;
+  text-align-last: left;
 }
 
 .title {
