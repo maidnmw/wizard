@@ -1,5 +1,5 @@
 <template>
-  <div class="container">
+  <div class="container-index">
     <div>
       <h1 class="title">
         Wizard
@@ -104,7 +104,7 @@ export default {
 </script>
 
 <style>
-.container {
+.container-index {
   margin: 0 auto;
   min-height: 100vh;
   display: flex;

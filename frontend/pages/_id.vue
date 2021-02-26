@@ -1,5 +1,5 @@
 <template>
-  <div class="container">
+  <div class="container-id">
     <div>
       <p class="subtitle">
         Wizard определил ваше направление:
@@ -23,7 +23,7 @@ export default {
 </script>
 
 <style>
-.container {
+.container-id {
   margin: 0 auto;
   min-height: 100vh;
   display: flex;
