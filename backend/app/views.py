@@ -1,18 +1,23 @@
+import logging
+
 from rest_framework.views import APIView
 from rest_framework.response import Response
+
+from app.direction_detector import DetectionDetector
+
+log = logging.getLogger(__name__)
 
 
 class Direction(APIView):
     def get(self, request, format=None):
-        queryList = request.GET.getlist('groups')
-        groups = []
+        groups = request.GET.getlist('groups')
+        if not groups:
+            return Response({'detail': 'No groups provided'}, status=422)
 
-        if len(queryList) > 0:
-            groups = queryList[0].split(',')
-
-        groups = list(map(int, groups))
-
-        # Добавить вызов функции для определения направления
-        direction = "Прикладная информатика"
-
+        groups = list(map(str, groups[0].split(',')))
+        direction = self.detect_direction(groups)
+        # remake to return json, not str
         return Response(direction)
+
+    def detect_direction(self, groups: list) -> str:
+        return DetectionDetector().predict(groups)
