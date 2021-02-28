@@ -111,6 +111,7 @@ export default {
   justify-content: center;
   align-items: center;
   text-align: center;
+  max-width: 800px;
 }
 
 .title {
@@ -129,7 +130,6 @@ export default {
   color: #526488;
   word-spacing: 5px;
   padding-bottom: 15px;
-  max-width: 800px;
 }
 
 .subtitle-2 {
