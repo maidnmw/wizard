@@ -104,3 +104,6 @@ USE_TZ = True
 
 
 STATIC_URL = '/static/'
+
+# change to get it from env
+DIR_WITH_MODELS = os.path.abspath(os.path.join(__file__, '..', '..', 'barrel'))
