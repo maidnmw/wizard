@@ -1,10 +1,10 @@
 <template>
   <div class="container-index">
     <div>
-      <h1 class="title">
+      <h1 class="title-index">
         Wizard
       </h1>
-      <p class="subtitle">
+      <p class="subtitle-index">
         Поможет тебе подобрать программу обучения в УрФУ
       </p>
 
@@ -17,7 +17,7 @@
           Авторизоваться через ВК
         </button>
 
-        <p class="subtitle-2">
+        <p class="subtitle-index-2">
           Или введите свой ID ВК
         </p>
 
@@ -114,7 +114,7 @@ export default {
   max-width: 800px;
 }
 
-.title {
+.title-index {
   font-family: "Quicksand", "Source Sans Pro", -apple-system, BlinkMacSystemFont,
     "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
   display: block;
@@ -124,7 +124,7 @@ export default {
   letter-spacing: 1px;
 }
 
-.subtitle {
+.subtitle-index {
   font-weight: 300;
   font-size: 42px;
   color: #526488;
@@ -132,7 +132,7 @@ export default {
   padding-bottom: 15px;
 }
 
-.subtitle-2 {
+.subtitle-index-2 {
   font-weight: 300;
   font-size: 25px;
   color: #526488;

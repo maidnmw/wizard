@@ -1,11 +1,11 @@
 <template>
   <div class="container-id">
     <div>
-      <p class="subtitle">
-        Wizard определил ваше направление:
+      <p class="subtitle-id">
+        Wizard определил Ваш институт:
       </p>
 
-      <p class="title">
+      <p class="title-id">
         {{ direction }}
       </p>
     </div>
@@ -70,7 +70,7 @@ export default {
   max-width: 1024px;
 }
 
-.title {
+.title-id {
   font-family: "Quicksand", "Source Sans Pro", -apple-system, BlinkMacSystemFont,
     "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
   display: block;
@@ -80,7 +80,7 @@ export default {
   letter-spacing: 1px;
 }
 
-.subtitle {
+.subtitle-id {
   font-weight: 300;
   font-size: 42px;
   color: #526488;
