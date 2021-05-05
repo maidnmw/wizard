@@ -11,13 +11,19 @@ from django.conf import settings
 log = logging.getLogger(__name__)
 
 
-class DetectionDetector:
-    """Singleton to detect class"""
+class DetectionDetectorMeta(type):
+    _instances = {}
 
-    def __new__(cls):
-        if not hasattr(cls, 'instance'):
-            cls.instance = super(DetectionDetector, cls).__new__(cls)
-        return cls.instance
+    def __init__(self, name, bases, mmbs):
+        super(DetectionDetectorMeta, self).__init__(name, bases, mmbs)
+        self._instance = super(DetectionDetectorMeta, self).__call__()
+
+    def __call__(self, *args, **kw):
+        return self._instance
+
+
+class DetectionDetector(metaclass=DetectionDetectorMeta):
+    """Singleton to detect class"""
 
     def __init__(self):
         log.info('Initializing Detection Detector')
