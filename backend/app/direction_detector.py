@@ -1,7 +1,9 @@
 import logging
 import os
+import traceback
 import pickle
 import pandas as pd
+from datetime import datetime
 
 from sklearn.preprocessing import OneHotEncoder
 from sklearn.naive_bayes import GaussianNB
@@ -9,6 +11,14 @@ from typing import List
 from django.conf import settings
 
 log = logging.getLogger(__name__)
+log.setLevel(logging.DEBUG)
+log.setLevel(logging.INFO)
+s_handler = logging.StreamHandler()
+s_handler.setLevel(logging.INFO)
+f_handler = logging.FileHandler(filename='logs/error-logs.log')
+f_handler.setLevel(logging.ERROR)
+log.addHandler(s_handler)
+log.addHandler(f_handler)
 
 
 class DetectionDetectorMeta(type):
@@ -37,10 +47,12 @@ class DetectionDetector(metaclass=DetectionDetectorMeta):
         self.ohe_df = pd.DataFrame([[0 for i in self.ohe.categories]],
                                    columns=self.ohe.categories)
         self.allowed_groups = set(self.ohe_df.columns)
-        log.info(self.allowed_groups)
+        log.info('Detection detector initialization is done')
+        
 
     def predict(self, groups: List[str]):
         log.info('predict called for groups: %s', groups)
+        log.info('groups count: %s', len(groups))
         df = self.ohe_df.copy()
         counter = 0
         for g in groups:
@@ -48,6 +60,10 @@ class DetectionDetector(metaclass=DetectionDetectorMeta):
                 df[g] = 1
                 counter += 1
         log.info('groups in common with allowed: %s', counter)
-        prediction = self.naive.predict([df.loc[0]])
-        log.info('prediction is %s', prediction)
-        return prediction[0]
+        try:
+            prediction = self.naive.predict([df.loc[0]])
+            log.info('prediction is %s', prediction)
+            return prediction[0]
+        except:            
+            log.error(f'PREDICTION ERROR\nTIME: {datetime.strftime(datetime.now(), "%Y.%m.%d %H:%M:%S")}\nTRACEBACK: {traceback.format_exc()}', )
+            return ('Something went wrong in prediction process')

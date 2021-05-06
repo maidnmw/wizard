@@ -5,8 +5,11 @@ from rest_framework.response import Response
 
 from app.direction_detector import DetectionDetector
 
-log = logging.getLogger(__name__)
-
+# log = logging.getLogger(__name__)
+# log.setLevel(logging.INFO)
+# handler = logging.StreamHandler()
+# handler.setLevel(logging.INFO)
+# log.addHandler(handler)
 
 class Direction(APIView):
     def get(self, request, format=None):
