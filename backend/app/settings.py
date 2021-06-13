@@ -108,5 +108,8 @@ USE_TZ = True
 
 STATIC_URL = '/static/'
 
+CORS_ORIGIN_ALLOW_ALL = True
+CORS_ALLOW_CREDENTIALS = True
+
 # change to get it from env
 DIR_WITH_MODELS = os.path.abspath(os.path.join(__file__, '..', '..', 'barrel'))
