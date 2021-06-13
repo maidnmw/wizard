@@ -48,7 +48,6 @@ class DetectionDetector(metaclass=DetectionDetectorMeta):
                                    columns=self.ohe.categories)
         self.allowed_groups = set(self.ohe_df.columns)
         log.info('Detection detector initialization is done')
-        
 
     def predict(self, groups: List[str]):
         log.info('predict called for groups: %s', groups)
@@ -64,10 +63,11 @@ class DetectionDetector(metaclass=DetectionDetectorMeta):
             prediction = self.naive.predict([df.loc[0]])
             log.info('prediction is %s', prediction)
             return prediction[0]
-        except:            
-            log.error(f'PREDICTION ERROR\nTIME: {datetime.strftime(datetime.now(), "%Y.%m.%d %H:%M:%S")}\nTRACEBACK: {traceback.format_exc()}', )
+        except:
+            log.error(
+                f'PREDICTION ERROR\nTIME: {datetime.strftime(datetime.now(), "%Y.%m.%d %H:%M:%S")}\nTRACEBACK: {traceback.format_exc()}', )
             return ('Something went wrong in prediction process')
-    
+
     def predict_with_allowed(self, groups: List[str]):
         log.info('predict called for groups: %s', groups)
         log.info('groups count: %s', len(groups))
@@ -78,6 +78,11 @@ class DetectionDetector(metaclass=DetectionDetectorMeta):
                 df[g] = 1
                 counter += 1
         log.info('groups in common with allowed: %s', counter)
+
+        groups_len = len(groups)
+        success = 0
+        if groups_len > 0:
+            success = counter * 100 / groups_len
         try:
             prediction = self.naive.predict([df.loc[0]])
             log.info('prediction is %s', prediction)
@@ -85,8 +90,47 @@ class DetectionDetector(metaclass=DetectionDetectorMeta):
                 'university_group': prediction[0],
                 'total_groups': len(groups),
                 'allowed_groups': counter,
-                'success_percentage': counter * 100 / len(groups)
+                'success_percentage': success,
             }
-        except:            
-            log.error(f'PREDICTION ERROR\nTIME: {datetime.strftime(datetime.now(), "%Y.%m.%d %H:%M:%S")}\nTRACEBACK: {traceback.format_exc()}', )
+        except:
+            log.error(
+                f'PREDICTION ERROR\nTIME: {datetime.strftime(datetime.now(), "%Y.%m.%d %H:%M:%S")}\nTRACEBACK: {traceback.format_exc()}', )
             return ('Something went wrong in prediction process')
+
+    def predict_candidates_list(self, candidates: List[str]):
+        log.info('predict called for candidates list')
+
+        for candidate in candidates:
+            groups = candidate.get('groups')
+            if not groups:
+                continue
+            groups = list(map(str, groups))
+
+            log.info('groups count: %s', len(groups))
+            df = self.ohe_df.copy()
+            counter = 0
+            for g in groups:
+                if g in self.allowed_groups:
+                    df[g] = 1
+                    counter += 1
+            log.info('groups in common with allowed: %s', counter)
+
+            groups_len = len(groups)
+            success = 0
+            if groups_len > 0:
+                success = counter * 100 / groups_len
+
+            try:
+                prediction = self.naive.predict([df.loc[0]])
+                log.info('prediction is %s', prediction)
+                candidate['prediction'] = {
+                    'university_group': prediction[0],
+                    'total_groups': len(groups),
+                    'allowed_groups': counter,
+                    'success_percentage': success,
+                }
+            except:
+                log.error(
+                    f'PREDICTION ERROR\nTIME: {datetime.strftime(datetime.now(), "%Y.%m.%d %H:%M:%S")}\nTRACEBACK: {traceback.format_exc()}')
+
+        return candidates

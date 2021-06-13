@@ -1,4 +1,5 @@
 import os
+import mongoengine
 
 from dotenv import load_dotenv
 from pathlib import Path
@@ -64,16 +65,23 @@ TEMPLATES = [
 WSGI_APPLICATION = 'app.wsgi.application'
 
 
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        'NAME': os.getenv("DATABASE_NAME"),
-        'USER': os.getenv("DATABASE_USER"),
-        'PASSWORD': os.getenv("DATABASE_PASSWORD"),
-        'HOST': os.getenv("DATABASE_HOST"),
-        'PORT': os.getenv("DATABASE_PORT"),
-    }
-}
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'django.db.backends.postgresql_psycopg2',
+#         'NAME': os.getenv("DATABASE_NAME"),
+#         'USER': os.getenv("DATABASE_USER"),
+#         'PASSWORD': os.getenv("DATABASE_PASSWORD"),
+#         'HOST': os.getenv("DATABASE_HOST"),
+#         'PORT': os.getenv("DATABASE_PORT"),
+#     }
+# }
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'django.db.backends.sqlite3',
+#         'NAME': BASE_DIR / 'db.sqlite3',
+#     }
+# }
+mongoengine.connect(db='wizard-admin', host='localhost:27017')
 
 
 AUTH_PASSWORD_VALIDATORS = [
