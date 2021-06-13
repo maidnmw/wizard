@@ -2,13 +2,14 @@ import logging
 import os
 import traceback
 import pickle
-import pandas as pd
 from datetime import datetime
 
-from sklearn.preprocessing import OneHotEncoder
-from sklearn.naive_bayes import GaussianNB
-from typing import List
+from sklearn.preprocessing import MultiLabelBinarizer
+from sklearn.ensemble import RandomForestClassifier
+from typing import List, Dict
 from django.conf import settings
+
+from backend.app.direction_map import direction_dict, direction_list
 
 log = logging.getLogger(__name__)
 log.setLevel(logging.DEBUG)
@@ -38,99 +39,28 @@ class DetectionDetector(metaclass=DetectionDetectorMeta):
     def __init__(self):
         log.info('Initializing Detection Detector')
         self.model_dir = settings.DIR_WITH_MODELS
-        log.info('Unpickling OHE')
-        with open(os.path.join(self.model_dir, 'ohe_subs.pickle'), 'rb') as f:
-            self.ohe: OneHotEncoder = pickle.load(f)
-        log.info('Unpickling Naive')
-        with open(os.path.join(self.model_dir, 'naive.pickle'), 'rb') as f:
-            self.naive: GaussianNB = pickle.load(f)
-        self.ohe_df = pd.DataFrame([[0 for i in self.ohe.categories]],
-                                   columns=self.ohe.categories)
-        self.allowed_groups = set(self.ohe_df.columns)
+        log.info('Unpickling Transformer')
+        with open(os.path.join(self.model_dir, 'mlb.pickle'), 'rb') as f:
+            self.transformer: MultiLabelBinarizer = pickle.load(f)
+        log.info('Unpickling Model')
+        with open(os.path.join(self.model_dir, 'model.pickle'), 'rb') as f:
+            self.model: RandomForestClassifier = pickle.load(f)
         log.info('Detection detector initialization is done')
 
-    def predict(self, groups: List[str]):
+    def predict(self, groups: List[str]) -> Dict[str, str]:
         log.info('predict called for groups: %s', groups)
         log.info('groups count: %s', len(groups))
-        df = self.ohe_df.copy()
-        counter = 0
-        for g in groups:
-            if g in self.allowed_groups:
-                df[g] = 1
-                counter += 1
-        log.info('groups in common with allowed: %s', counter)
         try:
-            prediction = self.naive.predict([df.loc[0]])
+            transformed_group = self.transformer.transform([groups])
+            prediction = list(self.model.predict_proba(transformed_group)[0])
             log.info('prediction is %s', prediction)
-            return prediction[0]
-        except:
-            log.error(
-                f'PREDICTION ERROR\nTIME: {datetime.strftime(datetime.now(), "%Y.%m.%d %H:%M:%S")}\nTRACEBACK: {traceback.format_exc()}', )
+            prediction_codes = {direction_dict[direction_list[prediction_index]]: prediction[prediction_index]
+                                for prediction_index in range(len(prediction))}
+
+            prediction_result = {k: str(round(v * 100, 1)) + '%'
+                                 for k, v in sorted(prediction_codes.items(), key=lambda item: item[1], reverse=True)}
+            return prediction_result
+
+        except:            
+            log.error(f'PREDICTION ERROR\nTIME: {datetime.strftime(datetime.now(), "%Y.%m.%d %H:%M:%S")}\nTRACEBACK: {traceback.format_exc()}', )
             return ('Something went wrong in prediction process')
-
-    def predict_with_allowed(self, groups: List[str]):
-        log.info('predict called for groups: %s', groups)
-        log.info('groups count: %s', len(groups))
-        df = self.ohe_df.copy()
-        counter = 0
-        for g in groups:
-            if g in self.allowed_groups:
-                df[g] = 1
-                counter += 1
-        log.info('groups in common with allowed: %s', counter)
-
-        groups_len = len(groups)
-        success = 0
-        if groups_len > 0:
-            success = counter * 100 / groups_len
-        try:
-            prediction = self.naive.predict([df.loc[0]])
-            log.info('prediction is %s', prediction)
-            return {
-                'university_group': prediction[0],
-                'total_groups': len(groups),
-                'allowed_groups': counter,
-                'success_percentage': success,
-            }
-        except:
-            log.error(
-                f'PREDICTION ERROR\nTIME: {datetime.strftime(datetime.now(), "%Y.%m.%d %H:%M:%S")}\nTRACEBACK: {traceback.format_exc()}', )
-            return ('Something went wrong in prediction process')
-
-    def predict_candidates_list(self, candidates: List[str]):
-        log.info('predict called for candidates list')
-
-        for candidate in candidates:
-            groups = candidate.get('groups')
-            if not groups:
-                continue
-            groups = list(map(str, groups))
-
-            log.info('groups count: %s', len(groups))
-            df = self.ohe_df.copy()
-            counter = 0
-            for g in groups:
-                if g in self.allowed_groups:
-                    df[g] = 1
-                    counter += 1
-            log.info('groups in common with allowed: %s', counter)
-
-            groups_len = len(groups)
-            success = 0
-            if groups_len > 0:
-                success = counter * 100 / groups_len
-
-            try:
-                prediction = self.naive.predict([df.loc[0]])
-                log.info('prediction is %s', prediction)
-                candidate['prediction'] = {
-                    'university_group': prediction[0],
-                    'total_groups': len(groups),
-                    'allowed_groups': counter,
-                    'success_percentage': success,
-                }
-            except:
-                log.error(
-                    f'PREDICTION ERROR\nTIME: {datetime.strftime(datetime.now(), "%Y.%m.%d %H:%M:%S")}\nTRACEBACK: {traceback.format_exc()}')
-
-        return candidates
