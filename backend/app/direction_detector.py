@@ -9,7 +9,7 @@ from sklearn.ensemble import RandomForestClassifier
 from typing import List, Dict
 from django.conf import settings
 
-from backend.app.direction_map import direction_dict, direction_list
+from app.direction_map import direction_dict, direction_list
 
 log = logging.getLogger(__name__)
 log.setLevel(logging.DEBUG)
@@ -61,6 +61,7 @@ class DetectionDetector(metaclass=DetectionDetectorMeta):
                                  for k, v in sorted(prediction_codes.items(), key=lambda item: item[1], reverse=True)}
             return prediction_result
 
-        except:            
-            log.error(f'PREDICTION ERROR\nTIME: {datetime.strftime(datetime.now(), "%Y.%m.%d %H:%M:%S")}\nTRACEBACK: {traceback.format_exc()}', )
+        except:
+            log.error(
+                f'PREDICTION ERROR\nTIME: {datetime.strftime(datetime.now(), "%Y.%m.%d %H:%M:%S")}\nTRACEBACK: {traceback.format_exc()}', )
             return ('Something went wrong in prediction process')
