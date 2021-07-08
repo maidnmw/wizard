@@ -21,6 +21,7 @@ ALLOWED_HOSTS = [
     'localhost',
     '0.0.0.0',
     '80.87.111.209',
+    'wizard.urfu.ru',
 ]
 
 
