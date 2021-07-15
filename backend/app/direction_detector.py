@@ -63,6 +63,7 @@ class DetectionDetector(metaclass=DetectionDetectorMeta):
             final_result = {}
             for key, value in prediction_result.items():
                 final_result[key] = {'id': id_dict[key], 'percent': value}
+
             return final_result
 
         except:
