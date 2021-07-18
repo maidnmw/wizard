@@ -19,6 +19,8 @@ direction_dict = {
     "18.03.01 ХТИ Химическая технология": "60eacf199189b220dfe275fc",
     "12.03.01 Приборостроение": "60ead4179189b220dfe275fd",
     "19.03.01 Биотехнологии": "60eac6059189b220dfe275fb",
+    "38.03.01 Мировая экономика и международный бизнес": "60f1c13ecf82320e5ecbab0f",
+    "38.03.02 Международный и корпоративный менеджмент": "60f1cb76cf82320e5ecbab10"
 }
 
 id_dict = {
@@ -42,6 +44,10 @@ id_dict = {
     "60eacf199189b220dfe275fc": 5,
     "60ead4179189b220dfe275fd": 5,
     "60eac6059189b220dfe275fb": 5,
+    "60f1c13ecf82320e5ecbab0f": 4,
+    "60f1cb76cf82320e5ecbab10": 4
 }
 
 direction_list = sorted(direction_dict.keys())
+
+print(direction_list)
