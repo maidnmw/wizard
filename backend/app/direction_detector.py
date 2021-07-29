@@ -4,7 +4,7 @@ import traceback
 import pickle
 from datetime import datetime
 
-from sklearn.preprocessing import MultiLabelBinarizer
+from sklearn.preprocessing import MultiLabelBinarizer, LabelEncoder
 from sklearn.ensemble import RandomForestClassifier
 from typing import List, Dict
 from django.conf import settings
@@ -45,24 +45,30 @@ class DetectionDetector(metaclass=DetectionDetectorMeta):
         log.info('Unpickling Model')
         with open(os.path.join(self.model_dir, 'model.pickle'), 'rb') as f:
             self.model: RandomForestClassifier = pickle.load(f)
+        log.info('Unpickling Encoder')
+        with open(os.path.join(self.model_dir, 'encoder.pickle'), 'rb') as f:
+            self.encoder: LabelEncoder = pickle.load(f)
         log.info('Detection detector initialization is done')
+        with open(os.path.join(self.model_dir, 'id_dict.pickle'), 'rb') as f:
+            self.id_dict: dict = pickle.load(f)
 
-    def predict(self, groups: List[str]) -> Dict[str, str]:
+    def predict(self, groups: List[str]) -> Dict[str, Dict]:
         log.info('predict called for groups: %s', groups)
         log.info('groups count: %s', len(groups))
         try:
-            transformed_group = self.transformer.transform([groups])
-            prediction = list(self.model.predict_proba(transformed_group)[0])
-            log.info('prediction is %s', prediction)
-            prediction_codes = {direction_dict[direction_list[prediction_index]]: prediction[prediction_index]
-                                for prediction_index in range(len(prediction))}
+            transformed_data = self.transformer.transform([groups])
+            prediction = list(self.model.predict_proba(transformed_data)[0])
+            labels = self.encoder.inverse_transform(
+                list(range(len(prediction))))
 
-            prediction_result = {k: str(round(v * 100, 1)) + '%'
-                                 for k, v in sorted(prediction_codes.items(), key=lambda item: item[1], reverse=True)}
+            prediction_dict = {label: value for label,
+                               value in zip(labels, prediction)}
+            prediction_result = {k: str(round(v * 100, 1)) + '%' for k, v in
+                                 sorted(prediction_dict.items(), key=lambda item: item[1], reverse=True)}
 
             final_result = {}
             for key, value in prediction_result.items():
-                final_result[key] = {'id': id_dict[key], 'percent': value}
+                final_result[key] = {'id': self.id_dict[key], 'percent': value}
 
             return final_result
 
